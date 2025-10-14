@@ -1,34 +1,34 @@
 <?php
-session_start();
-if (!isset($_SESSION['usuario_id'])) {
-    header('Location: login.php');
-    exit();
-}
-
 include 'database.php';
 
 if (isset($_GET['id'])) {
     $id_produto = intval($_GET['id']);
-    
-    // Verificar se existem movimentações para este produto
-    $sql_verificar = "SELECT COUNT(*) as total FROM movimentacoes WHERE id_produto = $id_produto";
-    $result_verificar = $conexao->query($sql_verificar);
-    $total_movimentacoes = $result_verificar->fetch_assoc()['total'];
-    
-    if ($total_movimentacoes > 0) {
-        // Não permitir exclusão se houver movimentações
-        header('Location: cadastro_produto.php?erro=produto_com_movimentacoes');
-    } else {
-        // Excluir produto
-        $sql_excluir = "DELETE FROM produtos WHERE id_produto = $id_produto";
-        if ($conexao->query($sql_excluir)) {
-            header('Location: cadastro_produto.php?sucesso=produto_excluido');
-        } else {
-            header('Location: cadastro_produto.php?erro=erro_exclusao');
-        }
+
+    // Inicia uma transação para segurança
+    $conexao->begin_transaction();
+
+    try {
+        // 1️⃣ Exclui movimentações relacionadas a este produto
+        $sql_mov = "DELETE FROM movimentacoes WHERE id_produto = $id_produto";
+        $conexao->query($sql_mov);
+
+        // 2️⃣ Exclui o produto da tabela principal
+        $sql_produto = "DELETE FROM produtos WHERE id_produto = $id_produto";
+        $conexao->query($sql_produto);
+
+        // 3️⃣ Confirma as exclusões
+        $conexao->commit();
+
+        // Redireciona de volta com mensagem de sucesso
+        header('Location: cadastro_produto.php?sucesso=produto_excluido');
+        exit();
+
+    } catch (Exception $e) {
+        // Caso algo dê errado, desfaz as mudanças
+        $conexao->rollback();
+        echo "❌ Erro ao excluir produto: " . $e->getMessage();
     }
 } else {
-    header('Location: cadastro_produto.php');
+    echo "❌ ID do produto não informado.";
 }
-exit();
 ?>

@@ -178,7 +178,7 @@ if ($resultado) {
                                 <td class="acoes">
                                     <a href="editar_produto.php?id=<?php echo $produto['id_produto']; ?>" class="btn-editar">Editar</a>
                                     <a href="excluir_produto.php?id=<?php echo $produto['id_produto']; ?>" 
-                                       class="btn-excluir" 
+                                       class="btn-excluir"
                                        onclick="return confirm('Tem certeza que deseja excluir este produto?')">Excluir</a>
                                 </td>
                             </tr>
