@@ -4,6 +4,14 @@ include 'database.php';
 if (isset($_GET['id'])) {
     $id_produto = intval($_GET['id']);
 
+    // Verificar se o produto existe
+    $sql_verifica = "SELECT * FROM produtos WHERE id_produto = $id_produto";
+    $resultado = $conexao->query($sql_verifica);
+    if ($resultado->num_rows == 0) {
+        header('Location: cadastro_produto.php?erro=produto_nao_encontrado');
+        exit();
+    }
+
     // Inicia uma transação para segurança
     $conexao->begin_transaction();
 

@@ -7,6 +7,16 @@ if (!isset($_SESSION['usuario_id'])) {
 
 include 'database.php';
 
+if (isset($_GET['sucesso']) && $_GET['sucesso'] == 'produto_excluido') {
+    $mensagem = "Produto excluído com sucesso!";
+    $tipo_mensagem = 'sucesso';
+}
+
+if (isset($_GET['erro']) && $_GET['erro'] == 'produto_nao_encontrado') {
+    $mensagem = "Erro: Produto não encontrado!";
+    $tipo_mensagem = 'erro';
+}
+
 $mensagem = '';
 $tipo_mensagem = '';
 
